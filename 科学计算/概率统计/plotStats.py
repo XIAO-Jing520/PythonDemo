@@ -9,6 +9,9 @@ from matplotlib import pyplot as plt
 3. cdf 分布函数
 4. ppf 百分位函数（累计分布函数的逆函数）
 5. lsf 生存函数的逆函数（1 - cdf 的逆函数）
+
+
+官方文档：https://docs.scipy.org/doc/scipy/reference/stats.html
 '''
 #! 初始设置
 # 用于正常显示中文标签
