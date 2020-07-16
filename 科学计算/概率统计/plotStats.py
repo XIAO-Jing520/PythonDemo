@@ -175,34 +175,32 @@ plt.legend(loc='upper left') #loc指定小图标的位置,upper上方，lower下
 # 伽马分布
 ## 我自己的实现
 from functools import partial  # 绑定参数
-from scipy import integrate
-gammaInner = lambda x,a: np.power(x,a-1)*np.exp(-x)
-a = 5
-gamma = integrate.quad(partial(gammaInner,a=a),0,np.inf) # gamma 其实等于 a-1 的阶乘
-
-points = 1000
-x1 = np.linspace(0,20,points)
-
-b = 3 # a 和 b 不要取得很大，要不然 np.power(b,a) 会越界变成负数
-gammaPDF = np.power(b,a)*np.power(x1,a-1)*np.exp(-b*x1)/gamma[0]
+from scipy import integrate # 求定积分
 
 
 ## 官方的实现
+alpha = 5
+beta = 5
+
+
+c = beta
+a = alpha/c
+
+x1 = np.linspace(st.gengamma.ppf(0.0001, a,c),
+                st.gengamma.ppf(0.9999, a,c), points)
+
+
+
+y1 = st.gengamma.pdf(x1, a,c)
+
 plt.figure(figsize=(14,7)) # 新建一个画布
-
-x1 = np.linspace(st.gamma.ppf(0.0001, a),
-                st.gamma.ppf(0.9999, a), points)
-
-scale = 1/b # scale = 1/b
-
-y1 = st.gamma.pdf(x1, a ,scale = scale) # 虽然官方 API 手册上写了 x2 = (x1 - loc) / scale，但是实际上对 scale 进行了特殊处理，应该是在整体乘了一个 scale，要不然分布函数不收敛于 1
-
 plt.subplot(121)
-plt.title("伽马分布 a=%f,b=%f" % (a,b))
+plt.title("伽马分布 alpha=%f,beta=%f" % (alpha,beta))
+plt.subplot(121)
 plt.plot(x1, y1)
 
 
-y2 = st.gamma.cdf(x1, a ,scale = scale)
+y2 = st.gengamma.cdf(x1, a,c)
 plt.subplot(122)
 plt.plot(x1, y2)
 
@@ -217,7 +215,7 @@ s = 0.1 # 相当于 omiga
 
 
 x1 = np.linspace(st.lognorm.ppf(0.0001, s = s,loc=loc, scale=scale),
-                    st.lognorm.ppf(0.9999, loc=loc, scale=scale), 
+                    st.lognorm.ppf(0.9999, s = s,loc=loc, scale=scale), 
                         points) # ppf 是 cdf 的逆函数
 y1 = st.lognorm.pdf(x1, s = s,loc=loc, scale=scale) # 概率密度
 y2 = st.lognorm.cdf(x1, s = s,loc=loc, scale=scale) # 分布函数
