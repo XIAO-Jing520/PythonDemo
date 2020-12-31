@@ -1,4 +1,7 @@
-#引入需要的包
+'''
+TODO:
+看一下统计部分，有没有严格按照定义来做统计！
+'''
 import simpy
 import random
 from time import time
@@ -9,8 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 randomSeed = time() # time()
 
 ## 指数分布的均值
-miu = 1
-lmbd = 2
+miu = 2
+lmbd = 1
 miuService = 1/miu
 lambdaReachInterval = 1/lmbd
 
@@ -18,10 +21,10 @@ lambdaReachInterval = 1/lmbd
 numService = 1
 
 ## 仿真程序运行的时间
-Until = 1000
+Until = 300
 
 ## 系统容量
-systemCapacity = None # None 表示无容量限制 max(10,numService)
+systemCapacity = max(10,numService) # None 表示无容量限制 max(10,numService)
 
 ## 最大等待时间
 maxWaiteTime = Until
@@ -215,7 +218,7 @@ def plotSimRes(customerList):
     plotTime_Service(customerList)
     plotQueueLen_time(customerList)
     plotWaiteTime_time(customerList)
-    plotWaiteTime_time_QueueLen(customerList)
+    # plotWaiteTime_time_QueueLen(customerList)
     plt.show()
 
 
