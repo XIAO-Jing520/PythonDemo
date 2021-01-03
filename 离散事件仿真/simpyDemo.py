@@ -1,7 +1,20 @@
 '''
 TODO:
-看一下统计部分，有没有严格按照定义来做统计！
 '''
+
+
+'''
+基础知识:
+1. random.expovariate(miu) 生成均值为 1/miu 的指数分布的随机数 
+2. 泊松过程的强度参数的意义：如果泊松过程的强度参数为 lambda，则在单位时间上新增一次的概率为 lambda，lambda 越大事件越可能发生
+3. 泊松事件的事件间隔彼此独立且服从参数为 lambda 的指数分布
+'''
+
+'''
+实现的细节:
+1. 统计函数没有将仿真结束时没有被服务完的人算入
+'''
+
 import simpy
 import random
 from time import time
@@ -12,19 +25,17 @@ from mpl_toolkits.mplot3d import Axes3D
 randomSeed = time() # time()
 
 ## 指数分布的均值
-miu = 2
-lmbd = 1
-miuService = 1/miu
-lambdaReachInterval = 1/lmbd
+miuService = 1  # 服务一个人的平均时间为 1 / 单位时间平均离开 1 个人
+lambdaReachInterval = 0.5  # 单位时间平均来 0.5 个人
 
 ## 服务台的数目
 numService = 1
 
 ## 仿真程序运行的时间
-Until = 300
+Until = 100
 
 ## 系统容量
-systemCapacity = max(10,numService) # None 表示无容量限制 max(10,numService)
+systemCapacity = None # None 表示无容量限制 max(10,numService)
 
 ## 最大等待时间
 maxWaiteTime = Until
@@ -146,6 +157,8 @@ def plotSimRes(customerList):
         preLen = 0
         integralQueueLen = 0
         maxLen = 0
+        global Until
+        timeInCount = Until
         for each in queueLenList:
             if each[1] != None:
                 x = [each[0]] * 2
@@ -153,13 +166,14 @@ def plotSimRes(customerList):
                 plt.plot(x,y,color='b')
                 plt.plot(each[0],each[1],'bo')
             else:
-                each[1] = preLen
+                timeInCount = preTime
+                break # 没有把仿真结束时未被服务完的人算进来
             integralQueueLen += (each[0] - preTime) * preLen
             preTime = each[0]
             preLen = each[1]
             maxLen = max(maxLen,each[1])
-        global Until
-        averageQueueLen = integralQueueLen / Until
+        
+        averageQueueLen = integralQueueLen / timeInCount
         plt.title("时间-队列长度图 平均队列长度：%f" % averageQueueLen)
         
         
@@ -183,7 +197,7 @@ def plotSimRes(customerList):
             x = [each[0]] * 2
             y = [0,each[1]]
             integralWaiteTime += each[1]
-            maxWaiteTime = max(integralWaiteTime,each[1])
+            maxWaiteTime = max(maxWaiteTime,each[1])
             plt.plot(x,y,color='b')
             plt.plot(each[0],each[1],'bo')
 
@@ -203,7 +217,7 @@ def plotSimRes(customerList):
 
         global Until
         for customer in customerList:
-            if customer.getServedTime != None:
+            if customer.getServedTime != None: # 没有把仿真结束时未被服务完的人算进来
                 queueLenList.append([customer.startTime,customer.queueLenStart,customer.getServedTime-customer.startTime])
         queueLenList.sort(key=lambda x:x[0])
 
