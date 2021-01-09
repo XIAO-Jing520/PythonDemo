@@ -1,9 +1,4 @@
 '''
-TODO:
-'''
-
-
-'''
 基础知识:
 1. random.expovariate(miu) 生成均值为 1/miu 的指数分布的随机数 
 2. 泊松过程的强度参数的意义：如果泊松过程的强度参数为 lambda，则在单位时间上新增一次的概率为 lambda，lambda 越大事件越可能发生
@@ -28,19 +23,19 @@ from mpl_toolkits.mplot3d import Axes3D
 randomSeed = time() # time()
 
 ## 指数分布的均值
-miuService = 1  # 服务一个人的平均时间为 1 / 单位时间平均离开 1 个人
+miuService = 1  # 单位时间平均离开 1 个人
 lambdaReachInterval = 0.5  # 单位时间平均来 0.5 个人
 
 ## 服务台的数目
 numService = 1
 
-## 仿真程序运行的时间
+## 仿真程序运行的时间 min
 Until = 100
 
 ## 系统容量
 systemCapacity = None # None 表示无容量限制 max(10,numService)
 
-## 最大等待时间
+## 最大等待时间 超过这个事件之后顾客会离开队伍
 maxWaiteTime = Until
 
 ## 初始队列长度
@@ -245,7 +240,7 @@ def main():
     #运行模拟场景
     env = simpy.Environment()
     env.process(runSys(env, numService,miuService))
-    env.run(until=Until) # 仿真时长，并不保证所有的事件都结束了
+    env.run(until=Until) 
     
     #查看统计结果
     plotSimRes(customerList)
